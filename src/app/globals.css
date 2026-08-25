@@ -16,9 +16,13 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #0a0f18;
+  background-color: transparent;
   color: #f8fafc;
   font-family: var(--font-inter);
+}
+
+body {
+  background-color: #0a0f18;
 }
 
 /* Custom Scrollbar */
@@ -27,26 +31,27 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0f18;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: rgba(255, 255, 255, 0.3);
 }
 
-/* Glassmorphism utility */
+/* Ultra-Transparent Glassmorphic Card */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 15, 24, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(10, 15, 24, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
 }

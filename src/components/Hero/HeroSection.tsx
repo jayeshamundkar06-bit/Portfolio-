@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowRight, Mail, Sparkles } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
 
 export const HeroSection: React.FC = () => {
@@ -15,7 +15,7 @@ export const HeroSection: React.FC = () => {
       <div className="container mx-auto max-w-5xl relative z-10 flex flex-col items-center md:items-start text-center md:text-left">
         <div className="max-w-3xl w-full">
           {/* Subheading tag */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-4 md:mb-6 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] mb-4 md:mb-6 backdrop-blur-sm">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <span className="text-xs sm:text-sm font-mono text-accent font-medium uppercase tracking-wider">
               Hi, I&apos;m
@@ -23,17 +23,17 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Name */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-2 sm:mb-4 tracking-tight leading-tight drop-shadow-lg">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-2 sm:mb-4 tracking-tight leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
             Jayesh Amundkar<span className="text-accent">.</span>
           </h1>
 
           {/* Role */}
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-textMuted via-slate-200 to-accent bg-clip-text text-transparent mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-textMuted via-slate-200 to-accent bg-clip-text text-transparent mb-4 sm:mb-6 drop-shadow-md">
             Full Stack Developer
           </h2>
 
           {/* Paragraph */}
-          <p className="text-sm sm:text-base md:text-lg text-slate-300 mb-8 max-w-2xl leading-relaxed bg-[#0a0f18]/40 p-4 rounded-2xl backdrop-blur-md border border-white/[0.08] shadow-2xl">
+          <p className="text-sm sm:text-base md:text-lg text-slate-200 mb-8 max-w-2xl leading-relaxed bg-[#0a0f18]/30 p-4 rounded-2xl backdrop-blur-sm border border-white/[0.1] shadow-2xl">
             I&apos;m a passionate Information Technology student and developer who enjoys building modern web applications, solving problems, and turning ideas into real-world digital experiences.
           </p>
 
@@ -51,7 +51,7 @@ export const HeroSection: React.FC = () => {
             <a
               href="#contact"
               onClick={() => playClick(800)}
-              className="w-full sm:w-auto text-center px-8 py-4 bg-white/[0.04] hover:bg-white/[0.08] border border-accent/60 text-accent hover:border-accent font-bold rounded-full transition-all duration-300 backdrop-blur-md text-sm sm:text-base flex items-center justify-center gap-2"
+              className="w-full sm:w-auto text-center px-8 py-4 bg-white/[0.06] hover:bg-white/[0.12] border border-accent/60 text-accent hover:border-accent font-bold rounded-full transition-all duration-300 backdrop-blur-sm text-sm sm:text-base flex items-center justify-center gap-2"
             >
               <Mail className="w-4 h-4" />
               <span>Contact Me</span>
