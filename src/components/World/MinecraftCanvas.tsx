@@ -22,7 +22,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
 
     // --- Scene, Camera, Renderer ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0e1422, 0.015); // Lighter, clearer fog
+    scene.fog = new THREE.FogExp2(0x0e1422, 0.012);
 
     const camera = new THREE.PerspectiveCamera(
       42,
@@ -32,7 +32,11 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     );
     camera.position.set(0, 7, 20);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance"
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -60,18 +64,16 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       return texture;
     };
 
-    // --- High-Resolution Pixel Minecraft Character Face Texture ---
+    // --- Face Texture with Trimmed Beard & Eyes ---
     const createFaceTexture = () => {
       const canvas = document.createElement("canvas");
       canvas.width = 16;
       canvas.height = 16;
       const ctx = canvas.getContext("2d")!;
 
-      // Base Skin
       ctx.fillStyle = "#d79e6d";
       ctx.fillRect(0, 0, 16, 16);
 
-      // Skin shading variance
       for (let x = 0; x < 16; x++) {
         for (let y = 0; y < 16; y++) {
           if (Math.random() > 0.6) {
@@ -81,7 +83,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
         }
       }
 
-      // Hair (Top and sides)
+      // Hair
       ctx.fillStyle = "#271508";
       ctx.fillRect(0, 0, 16, 5);
       ctx.fillRect(0, 5, 2, 4);
@@ -94,16 +96,14 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       ctx.fillRect(2, 6, 4, 1);
       ctx.fillRect(10, 6, 4, 1);
 
-      // Eyes (White sclera + deep pupil + reflection)
+      // Eyes (White sclera + deep pupil + blue specular)
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(2, 7, 4, 3);
       ctx.fillRect(10, 7, 4, 3);
 
-      // Pupils (Brown / Blue)
       ctx.fillStyle = "#3b2210";
       ctx.fillRect(4, 7, 2, 3);
       ctx.fillRect(10, 7, 2, 3);
-      // Pupil highlight
       ctx.fillStyle = "#60a5fa";
       ctx.fillRect(4, 8, 1, 1);
       ctx.fillRect(10, 8, 1, 1);
@@ -112,12 +112,10 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       ctx.fillStyle = "#bf8353";
       ctx.fillRect(6, 9, 4, 2);
 
-      // Trimmed Beard (Characteristic requested feature - authentic Minecraft jawline & mustache)
+      // Beard & Mustache
       ctx.fillStyle = "#1f1107";
-      // Mustache
       ctx.fillRect(4, 11, 8, 2);
       ctx.fillRect(7, 11, 2, 1);
-      // Beard sides and chin
       ctx.fillRect(1, 10, 3, 6);
       ctx.fillRect(12, 10, 3, 6);
       ctx.fillRect(3, 13, 10, 3);
@@ -134,18 +132,16 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       return texture;
     };
 
-    // --- Minecraft Torso Texture ---
+    // --- Developer Torso Texture ---
     const createTorsoTexture = () => {
       const canvas = document.createElement("canvas");
       canvas.width = 16;
       canvas.height = 20;
       const ctx = canvas.getContext("2d")!;
 
-      // Teal / Emerald adventurer jacket
       ctx.fillStyle = "#00887a";
       ctx.fillRect(0, 0, 16, 20);
 
-      // Shading
       for (let x = 0; x < 16; x++) {
         for (let y = 0; y < 20; y++) {
           if (Math.random() > 0.5) {
@@ -155,15 +151,12 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
         }
       }
 
-      // V-Neck / Shirt opening
       ctx.fillStyle = "#d79e6d";
       ctx.fillRect(6, 0, 4, 4);
       ctx.fillRect(7, 4, 2, 2);
 
-      // Belt
       ctx.fillStyle = "#3e2723";
       ctx.fillRect(0, 15, 16, 3);
-      // Gold Buckle
       ctx.fillStyle = "#fbc02d";
       ctx.fillRect(6, 15, 4, 3);
       ctx.fillStyle = "#fff59d";
@@ -172,6 +165,65 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       const texture = new THREE.CanvasTexture(canvas);
       texture.magFilter = THREE.NearestFilter;
       texture.minFilter = THREE.NearestFilter;
+      return texture;
+    };
+
+    // --- Laptop Screen Code Texture ---
+    const createCodeScreenTexture = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 64;
+      canvas.height = 40;
+      const ctx = canvas.getContext("2d")!;
+
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, 64, 40);
+
+      // Code line representations
+      const lineColors = ["#38bdf8", "#4ade80", "#a855f7", "#fbbf24", "#f87171", "#e2e8f0"];
+      for (let y = 4; y < 36; y += 4) {
+        const indent = (y % 8 === 0) ? 12 : 4;
+        const width = Math.floor(Math.random() * 32) + 12;
+        ctx.fillStyle = lineColors[Math.floor(Math.random() * lineColors.length)];
+        ctx.fillRect(indent, y, width, 2);
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.magFilter = THREE.NearestFilter;
+      return texture;
+    };
+
+    // --- Lamb Face Texture ---
+    const createLambFaceTexture = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 16;
+      canvas.height = 16;
+      const ctx = canvas.getContext("2d")!;
+
+      // Wool Top
+      ctx.fillStyle = "#e2e8f0";
+      ctx.fillRect(0, 0, 16, 5);
+
+      // Pink Face
+      ctx.fillStyle = "#fbcfe8";
+      ctx.fillRect(2, 5, 12, 11);
+
+      // Sheep Eyes (White + Black horizontal pupil)
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 6, 4, 3);
+      ctx.fillRect(12, 6, 4, 3);
+
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(1, 7, 2, 2);
+      ctx.fillRect(13, 7, 2, 2);
+
+      // Nose & Mouth
+      ctx.fillStyle = "#f472b6";
+      ctx.fillRect(6, 11, 4, 2);
+      ctx.fillStyle = "#db2777";
+      ctx.fillRect(7, 13, 2, 1);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.magFilter = THREE.NearestFilter;
       return texture;
     };
 
@@ -185,6 +237,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     const diamondOreTex = createPixelTexture(["#737373", "#616161", "#4deeea", "#00f0ff"]);
     const goldOreTex = createPixelTexture(["#737373", "#616161", "#f9a825", "#ffd700"]);
     const obsidianTex = createPixelTexture(["#161024", "#110b1c", "#241838", "#331f50"]);
+    const woolTex = createPixelTexture(["#f8fafc", "#f1f5f9", "#e2e8f0", "#cbd5e1"]);
 
     const boxGeo = new THREE.BoxGeometry(1, 1, 1);
 
@@ -204,8 +257,9 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     const diamondMat = new THREE.MeshLambertMaterial({ map: diamondOreTex });
     const goldMat = new THREE.MeshLambertMaterial({ map: goldOreTex });
     const obsidianMat = new THREE.MeshLambertMaterial({ map: obsidianTex });
+    const woolMat = new THREE.MeshLambertMaterial({ map: woolTex });
 
-    // --- Build Floating 3D Minecraft Island ---
+    // --- Floating Minecraft Island Group ---
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
@@ -253,7 +307,6 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       const treeGroup = new THREE.Group();
       treeGroup.position.set(tx, ty, tz);
 
-      // Trunk
       for (let y = 0; y < 5; y++) {
         const trunk = new THREE.Mesh(boxGeo, woodMat);
         trunk.position.set(0, y + 0.5, 0);
@@ -261,7 +314,6 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
         treeGroup.add(trunk);
       }
 
-      // Leaves
       for (let lx = -2; lx <= 2; lx++) {
         for (let ly = 3; ly <= 5; ly++) {
           for (let lz = -2; lz <= 2; lz++) {
@@ -309,14 +361,10 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       portalGroup.add(obs);
     });
 
-    const portalEnergyGeo = new THREE.PlaneGeometry(2, 3);
-    const portalEnergyMat = new THREE.MeshBasicMaterial({
-      color: 0xb026ff,
-      transparent: true,
-      opacity: 0.85,
-      side: THREE.DoubleSide
-    });
-    const portalEnergy = new THREE.Mesh(portalEnergyGeo, portalEnergyMat);
+    const portalEnergy = new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 3),
+      new THREE.MeshBasicMaterial({ color: 0xb026ff, transparent: true, opacity: 0.85, side: THREE.DoubleSide })
+    );
     portalEnergy.position.set(1.5, 2, 0);
     portalGroup.add(portalEnergy);
 
@@ -324,36 +372,28 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     portalLight.position.set(1.5, 2, 1);
     portalGroup.add(portalLight);
 
-    // --- Authentic Minecraft Character (Jayesh with Beard, Hair, Eyes & Diamond Sword) ---
+    // --- Authentic Minecraft Character (Jayesh with Beard, Hair, Eyes & Laptop) ---
     const character = new THREE.Group();
-    character.position.set(-0.5, 2.6, 2);
-    character.scale.set(1.25, 1.25, 1.25); // Prominent size
+    character.position.set(-0.8, 2.6, 2);
+    character.scale.set(1.25, 1.25, 1.25);
     worldGroup.add(character);
 
-    // Character Materials
-    const skinMat = new THREE.MeshLambertMaterial({ color: 0xd79e6d });
-    const hairMat = new THREE.MeshLambertMaterial({ color: 0x271508 });
-    const pantsMat = new THREE.MeshLambertMaterial({ color: 0x1a237e }); // Deep blue jeans
-    const shoeMat = new THREE.MeshLambertMaterial({ color: 0x424242 }); // Gray shoes
-
-    // Face & Head Materials
+    // Head
     const faceTex = createFaceTexture();
     const headMats = [
-      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#1f1107"]) }), // Right
-      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#1f1107"]) }), // Left
-      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#38200d"]) }), // Top
-      new THREE.MeshLambertMaterial({ color: 0x1f1107 }),                                   // Bottom (beard under chin)
-      new THREE.MeshLambertMaterial({ map: faceTex }),                                      // Front (Eyes, Beard, Nose)
-      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#1e1005"]) })  // Back
+      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#1f1107"]) }),
+      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#1f1107"]) }),
+      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#38200d"]) }),
+      new THREE.MeshLambertMaterial({ color: 0x1f1107 }),
+      new THREE.MeshLambertMaterial({ map: faceTex }),
+      new THREE.MeshLambertMaterial({ map: createPixelTexture(["#271508", "#1e1005"]) })
     ];
-
-    const headGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-    const head = new THREE.Mesh(headGeo, headMats);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), headMats);
     head.position.set(0, 1.9, 0);
     head.castShadow = true;
     character.add(head);
 
-    // Torso with jacket texture
+    // Torso
     const torsoTex = createTorsoTexture();
     const torsoMats = [
       new THREE.MeshLambertMaterial({ color: 0x007a6d }),
@@ -363,93 +403,92 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       new THREE.MeshLambertMaterial({ map: torsoTex }),
       new THREE.MeshLambertMaterial({ color: 0x00695c })
     ];
-    const torsoGeo = new THREE.BoxGeometry(0.8, 1.2, 0.4);
-    const torso = new THREE.Mesh(torsoGeo, torsoMats);
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 0.4), torsoMats);
     torso.position.set(0, 0.9, 0);
     torso.castShadow = true;
     character.add(torso);
 
-    // Left Arm
-    const leftArmGroup = new THREE.Group();
-    leftArmGroup.position.set(-0.6, 1.3, 0);
-    const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.2, 0.38), [
+    // Arms
+    const armMat = [
       new THREE.MeshLambertMaterial({ color: 0x007a6d }),
       new THREE.MeshLambertMaterial({ color: 0x007a6d }),
       new THREE.MeshLambertMaterial({ color: 0x00887a }),
-      new THREE.MeshLambertMaterial({ color: 0xd79e6d }),
+      new THREE.MeshLambertMaterial({ color: 0xd79e6d }), // hand
       new THREE.MeshLambertMaterial({ color: 0x007a6d }),
       new THREE.MeshLambertMaterial({ color: 0x007a6d })
-    ]);
+    ];
+
+    // Left Arm angled towards laptop
+    const leftArmGroup = new THREE.Group();
+    leftArmGroup.position.set(-0.55, 1.3, 0);
+    leftArmGroup.rotation.x = -Math.PI / 4;
+    leftArmGroup.rotation.y = Math.PI / 8;
+    const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, 0.35), armMat);
     leftArm.position.set(0, -0.4, 0);
     leftArm.castShadow = true;
     leftArmGroup.add(leftArm);
     character.add(leftArmGroup);
 
-    // Right Arm (Holding Diamond Sword)
+    // Right Arm holding the laptop
     const rightArmGroup = new THREE.Group();
-    rightArmGroup.position.set(0.6, 1.3, 0);
-    const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.2, 0.38), [
-      new THREE.MeshLambertMaterial({ color: 0x007a6d }),
-      new THREE.MeshLambertMaterial({ color: 0x007a6d }),
-      new THREE.MeshLambertMaterial({ color: 0x00887a }),
-      new THREE.MeshLambertMaterial({ color: 0xd79e6d }),
-      new THREE.MeshLambertMaterial({ color: 0x007a6d }),
-      new THREE.MeshLambertMaterial({ color: 0x007a6d })
-    ]);
+    rightArmGroup.position.set(0.55, 1.3, 0);
+    rightArmGroup.rotation.x = -Math.PI / 3.5;
+    rightArmGroup.rotation.y = -Math.PI / 10;
+    const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, 0.35), armMat);
     rightArm.position.set(0, -0.4, 0);
     rightArm.castShadow = true;
     rightArmGroup.add(rightArm);
     character.add(rightArmGroup);
 
-    // --- Iconic Pixelated Minecraft Diamond Sword ---
-    const swordGroup = new THREE.Group();
-    swordGroup.position.set(0, -0.85, 0.35);
-    swordGroup.rotation.x = Math.PI / 3.5;
-    swordGroup.rotation.z = -Math.PI / 8;
-    rightArmGroup.add(swordGroup);
+    // --- 3D Minecraft Developer Laptop ---
+    const laptopGroup = new THREE.Group();
+    laptopGroup.position.set(0, 0.75, 0.55);
+    laptopGroup.rotation.x = Math.PI / 12;
+    character.add(laptopGroup);
 
-    // Sword Materials
-    const diamondCyanMat = new THREE.MeshLambertMaterial({ color: 0x4deeea });
-    const diamondOutlineMat = new THREE.MeshLambertMaterial({ color: 0x1b8c89 });
-    const swordHiltMat = new THREE.MeshLambertMaterial({ color: 0x5c3d25 });
-    const swordGoldMat = new THREE.MeshLambertMaterial({ color: 0xf9a825 });
+    // Laptop Base / Keyboard chassis (Space Gray Aluminum)
+    const laptopChassisMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.04, 0.45), laptopChassisMat);
+    laptopGroup.add(laptopBase);
 
-    // Hilt / Handle
-    for (let i = 0; i < 4; i++) {
-      const hiltSegment = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.06), swordHiltMat);
-      hiltSegment.position.set(-0.06 * i, -0.06 * i, 0);
-      swordGroup.add(hiltSegment);
-    }
+    // Keyboard Area
+    const keyboardMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+    const keyboard = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.01, 0.25), keyboardMat);
+    keyboard.position.set(0, 0.025, -0.05);
+    laptopGroup.add(keyboard);
 
-    // Crossguard
-    const guard1 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.08), swordGoldMat);
-    guard1.position.set(0.06, 0.06, 0);
-    swordGroup.add(guard1);
-    const guard2 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.08), diamondCyanMat);
-    guard2.position.set(0.14, -0.02, 0);
-    swordGroup.add(guard2);
-    const guard3 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.08), diamondCyanMat);
-    guard3.position.set(-0.02, 0.14, 0);
-    swordGroup.add(guard3);
+    // Trackpad
+    const trackpad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.005, 0.12), new THREE.MeshLambertMaterial({ color: 0x475569 }));
+    trackpad.position.set(0, 0.025, 0.12);
+    laptopGroup.add(trackpad);
 
-    // Stepped Diamond Blade (Iconic 45-degree voxel step)
-    for (let b = 1; b <= 9; b++) {
-      // Core diamond blade block
-      const bladeCore = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.06), diamondCyanMat);
-      bladeCore.position.set(0.09 * b + 0.1, 0.09 * b + 0.1, 0);
-      swordGroup.add(bladeCore);
+    // Laptop Screen Lid (Angled back at 110 deg)
+    const laptopScreenLid = new THREE.Group();
+    laptopScreenLid.position.set(0, 0.02, -0.22);
+    laptopScreenLid.rotation.x = -Math.PI / 2.8;
+    laptopGroup.add(laptopScreenLid);
 
-      // Dark edge pixel
-      const bladeEdge = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.05), diamondOutlineMat);
-      bladeEdge.position.set(0.09 * b + 0.16, 0.09 * b + 0.06, 0);
-      swordGroup.add(bladeEdge);
-    }
-    // Sword Tip
-    const bladeTip = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.06), diamondCyanMat);
-    bladeTip.position.set(0.09 * 10 + 0.1, 0.09 * 10 + 0.1, 0);
-    swordGroup.add(bladeTip);
+    // Screen Bezel
+    const screenBezel = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.45, 0.03), laptopChassisMat);
+    screenBezel.position.set(0, 0.22, 0);
+    laptopScreenLid.add(screenBezel);
+
+    // Glowing Code Screen Plane
+    const codeScreenTex = createCodeScreenTexture();
+    const screenDisplay = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.58, 0.38),
+      new THREE.MeshBasicMaterial({ map: codeScreenTex })
+    );
+    screenDisplay.position.set(0, 0.22, 0.02);
+    laptopScreenLid.add(screenDisplay);
+
+    // Screen light casting glow onto Jayesh
+    const laptopGlow = new THREE.PointLight(0x38bdf8, 1.8, 3);
+    laptopGlow.position.set(0, 0.25, 0.1);
+    laptopScreenLid.add(laptopGlow);
 
     // Legs
+    const pantsMat = new THREE.MeshLambertMaterial({ color: 0x1a237e });
     const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.2, 0.38), pantsMat);
     leftLeg.position.set(-0.2, -0.3, 0);
     leftLeg.castShadow = true;
@@ -459,6 +498,73 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     rightLeg.position.set(0.2, -0.3, 0);
     rightLeg.castShadow = true;
     character.add(rightLeg);
+
+    // --- Cute Little Minecraft Lamb / Baby Sheep beside Jayesh ---
+    const lambGroup = new THREE.Group();
+    lambGroup.position.set(1.4, 2.2, 2.2);
+    lambGroup.scale.set(0.85, 0.85, 0.85);
+    lambGroup.rotation.y = -Math.PI / 6;
+    worldGroup.add(lambGroup);
+
+    // Lamb Wool Body
+    const lambBody = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.75, 1.1), woolMat);
+    lambBody.position.set(0, 0.65, 0);
+    lambBody.castShadow = true;
+    lambGroup.add(lambBody);
+
+    // Lamb Head with Wool Cap and Face Texture
+    const lambHeadGroup = new THREE.Group();
+    lambHeadGroup.position.set(0, 1.05, 0.55);
+    lambGroup.add(lambHeadGroup);
+
+    const lambFaceTex = createLambFaceTexture();
+    const lambHeadMats = [
+      new THREE.MeshLambertMaterial({ map: woolTex }),
+      new THREE.MeshLambertMaterial({ map: woolTex }),
+      new THREE.MeshLambertMaterial({ map: woolTex }),
+      new THREE.MeshLambertMaterial({ color: 0xfbcfe8 }),
+      new THREE.MeshLambertMaterial({ map: lambFaceTex }),
+      new THREE.MeshLambertMaterial({ map: woolTex })
+    ];
+    const lambHead = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), lambHeadMats);
+    lambHead.castShadow = true;
+    lambHeadGroup.add(lambHead);
+
+    // Lamb Ears
+    const earPinkMat = new THREE.MeshLambertMaterial({ color: 0xfbcfe8 });
+    const leftEar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 0.08), earPinkMat);
+    leftEar.position.set(-0.32, 0.05, -0.05);
+    leftEar.rotation.z = Math.PI / 8;
+    lambHeadGroup.add(leftEar);
+
+    const rightEar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 0.08), earPinkMat);
+    rightEar.position.set(0.32, 0.05, -0.05);
+    rightEar.rotation.z = -Math.PI / 8;
+    lambHeadGroup.add(rightEar);
+
+    // 4 Lamb Legs
+    const lambLegMat = new THREE.MeshLambertMaterial({ color: 0xfbcfe8 });
+    const legGeo = new THREE.BoxGeometry(0.2, 0.55, 0.2);
+
+    const lambLegFL = new THREE.Mesh(legGeo, lambLegMat);
+    lambLegFL.position.set(-0.3, 0.28, 0.35);
+    lambLegFL.castShadow = true;
+    lambGroup.add(lambLegFL);
+
+    const lambLegFR = new THREE.Mesh(legGeo, lambLegMat);
+    lambLegFR.position.set(0.3, 0.28, 0.35);
+    lambLegFR.castShadow = true;
+    lambGroup.add(lambLegFR);
+
+    const lambLegBL = new THREE.Mesh(legGeo, lambLegMat);
+    lambLegBL.position.set(-0.3, 0.28, -0.35);
+    lambLegBL.castShadow = true;
+    lambGroup.add(lambLegBL);
+
+    const lambLegBR = new THREE.Mesh(legGeo, lambLegMat);
+    lambLegBR.position.set(0.3, 0.28, -0.35);
+    lambLegBR.castShadow = true;
+    lambGroup.add(lambLegBR);
 
     // --- Floating Glowing Runes & Particles ---
     const particleCount = 200;
@@ -489,8 +595,8 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
 
-    // --- Direct Crisp Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // --- Crisp Direct & Ambient Lighting ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
     const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.6);
@@ -501,9 +607,9 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     sunLight.shadow.bias = -0.0005;
     scene.add(sunLight);
 
-    // Character rim light
-    const charLight = new THREE.PointLight(0x4deeea, 2, 8);
-    charLight.position.set(-0.5, 3.5, 3.5);
+    // Character & Lamb keylight
+    const charLight = new THREE.PointLight(0x4deeea, 1.8, 9);
+    charLight.position.set(0, 3.5, 3.5);
     scene.add(charLight);
 
     // --- Mouse Parallax Controls ---
@@ -534,7 +640,6 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       time += 0.018;
       const progress = scrollRef.current;
 
-      // Camera sweeps smoothly around the character and island
       const radius = 19 - progress * 6;
       const angle = progress * Math.PI * 1.5 + mouseX * 0.25;
       const targetCamX = Math.sin(angle) * radius;
@@ -545,14 +650,21 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       camera.position.y += (targetCamY - camera.position.y) * 0.06;
       camera.position.z += (targetCamZ - camera.position.z) * 0.06;
 
-      camera.lookAt(character.position.x, character.position.y + 1.2, character.position.z);
+      camera.lookAt(character.position.x + 0.5, character.position.y + 1.0, character.position.z);
 
-      // Character Breathing & Looking at Mouse
+      // Jayesh Breathing & Typing
       character.position.y = 2.6 + Math.sin(time * 2.2) * 0.04;
       head.rotation.y = Math.sin(time * 1.2) * 0.15 + mouseX * 0.35;
-      head.rotation.x = -mouseY * 0.2;
-      rightArmGroup.rotation.x = Math.sin(time * 2.2) * 0.08;
-      leftArmGroup.rotation.x = -Math.sin(time * 2.2) * 0.08;
+      head.rotation.x = -mouseY * 0.2 + 0.1; // looking slightly down at screen
+      leftArmGroup.rotation.z = Math.sin(time * 6) * 0.04;
+      rightArmGroup.rotation.z = -Math.sin(time * 6) * 0.04;
+
+      // Little Lamb Nibbling & Head Tilting
+      lambGroup.position.y = 2.2 + Math.sin(time * 2.5) * 0.03;
+      lambHeadGroup.rotation.x = Math.sin(time * 1.8) * 0.15;
+      lambHeadGroup.rotation.y = Math.cos(time * 1.2) * 0.25;
+      leftEar.rotation.z = Math.PI / 8 + Math.sin(time * 4) * 0.1;
+      rightEar.rotation.z = -Math.PI / 8 - Math.sin(time * 4) * 0.1;
 
       // Portal energy pulse
       portalEnergy.scale.set(1 + Math.sin(time * 4) * 0.04, 1 + Math.cos(time * 4) * 0.04, 1);
