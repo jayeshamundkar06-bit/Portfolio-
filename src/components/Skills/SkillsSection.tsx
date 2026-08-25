@@ -1,42 +1,119 @@
 "use client";
 
-import React, { useState } from "react";
-import { Code2, Globe, Database, Wrench, Heart, Terminal, FileCode, Layers, Server, ShieldCheck, CheckCircle2 } from "lucide-react";
+import React from "react";
+import {
+  Code2,
+  Globe,
+  Database,
+  Wrench,
+  Heart,
+  Network,
+  Bug,
+  Layout,
+  Layers,
+  FileSpreadsheet
+} from "lucide-react";
+import {
+  FaJava,
+  FaPython,
+  FaJs,
+  FaHtml5,
+  FaCss3Alt,
+  FaReact,
+  FaNodeJs,
+  FaGithub
+} from "react-icons/fa";
+import {
+  SiCplusplus,
+  SiC,
+  SiExpress,
+  SiMysql,
+  SiMongodb,
+  SiPostman
+} from "react-icons/si";
+import { VscVscode } from "react-icons/vsc";
+import { GrOracle } from "react-icons/gr";
+import { TbApi, TbBinaryTree, TbBrandSpeedtest } from "react-icons/tb";
+import { DiMsqlServer } from "react-icons/di";
+import { BiBarChartAlt2 } from "react-icons/bi";
 import { useSound } from "@/hooks/useSound";
+
+interface SkillItem {
+  name: string;
+  icon: React.ReactNode;
+}
+
+interface SkillGroup {
+  title: string;
+  icon: React.ReactNode;
+  gradient: string;
+  skills: SkillItem[];
+}
 
 export const SkillsSection: React.FC = () => {
   const { playItemPop } = useSound();
 
-  const skillGroups = [
+  const skillGroups: SkillGroup[] = [
     {
       title: "Programming Languages",
       icon: <Code2 className="w-5 h-5" />,
       gradient: "from-blue-500 to-cyan-400",
-      skills: ["Java", "Python", "JavaScript", "C++", "C"]
+      skills: [
+        { name: "Java", icon: <FaJava className="w-4 h-4 text-[#f89820]" /> },
+        { name: "Python", icon: <FaPython className="w-4 h-4 text-[#3776AB]" /> },
+        { name: "JavaScript", icon: <FaJs className="w-4 h-4 text-[#F7DF1E]" /> },
+        { name: "C++", icon: <SiCplusplus className="w-4 h-4 text-[#00599C]" /> },
+        { name: "C", icon: <SiC className="w-4 h-4 text-[#A8B9CC]" /> }
+      ]
     },
     {
       title: "Web Technologies",
       icon: <Globe className="w-5 h-5" />,
       gradient: "from-purple-500 to-pink-400",
-      skills: ["HTML", "CSS", "React.js", "Node.js", "Express.js", "REST APIs"]
+      skills: [
+        { name: "HTML", icon: <FaHtml5 className="w-4 h-4 text-[#E34F26]" /> },
+        { name: "CSS", icon: <FaCss3Alt className="w-4 h-4 text-[#1572B6]" /> },
+        { name: "React.js", icon: <FaReact className="w-4 h-4 text-[#61DAFB]" /> },
+        { name: "Node.js", icon: <FaNodeJs className="w-4 h-4 text-[#339933]" /> },
+        { name: "Express.js", icon: <SiExpress className="w-4 h-4 text-[#ffffff]" /> },
+        { name: "REST APIs", icon: <TbApi className="w-4 h-4 text-[#38bdf8]" /> }
+      ]
     },
     {
       title: "Databases",
       icon: <Database className="w-5 h-5" />,
       gradient: "from-green-500 to-emerald-400",
-      skills: ["MySQL", "Oracle", "SQL Server", "MongoDB"]
+      skills: [
+        { name: "MySQL", icon: <SiMysql className="w-4 h-4 text-[#4479A1]" /> },
+        { name: "Oracle", icon: <GrOracle className="w-4 h-4 text-[#F80000]" /> },
+        { name: "SQL Server", icon: <DiMsqlServer className="w-4 h-4 text-[#CC292B]" /> },
+        { name: "MongoDB", icon: <SiMongodb className="w-4 h-4 text-[#47A248]" /> }
+      ]
     },
     {
       title: "Tools & Concepts",
       icon: <Wrench className="w-5 h-5" />,
       gradient: "from-orange-500 to-yellow-400",
-      skills: ["GitHub", "VS Code", "Postman", "OOP", "Responsive Design", "Debugging", "DSA"]
+      skills: [
+        { name: "GitHub", icon: <FaGithub className="w-4 h-4 text-[#f0f6fc]" /> },
+        { name: "VS Code", icon: <VscVscode className="w-4 h-4 text-[#007ACC]" /> },
+        { name: "Postman", icon: <SiPostman className="w-4 h-4 text-[#FF6C37]" /> },
+        { name: "OOP", icon: <Layers className="w-4 h-4 text-[#a855f7]" /> },
+        { name: "Responsive Design", icon: <Layout className="w-4 h-4 text-[#38bdf8]" /> },
+        { name: "Debugging", icon: <Bug className="w-4 h-4 text-[#ef4444]" /> },
+        { name: "DSA", icon: <TbBinaryTree className="w-4 h-4 text-[#10b981]" /> }
+      ]
     },
     {
       title: "Other Interests",
       icon: <Heart className="w-5 h-5" />,
       gradient: "from-pink-500 to-rose-400",
-      skills: ["Data Structures", "Basic Networking", "Excel", "Power BI"]
+      skills: [
+        { name: "Data Structures", icon: <TbBinaryTree className="w-4 h-4 text-[#f43f5e]" /> },
+        { name: "Basic Networking", icon: <Network className="w-4 h-4 text-[#06b6d4]" /> },
+        { name: "Excel", icon: <FileSpreadsheet className="w-4 h-4 text-[#107c41]" /> },
+        { name: "Power BI", icon: <BiBarChartAlt2 className="w-4 h-4 text-[#F2C811]" /> }
+      ]
     }
   ];
 
@@ -77,9 +154,12 @@ export const SkillsSection: React.FC = () => {
                     <button
                       key={sIdx}
                       onClick={() => playItemPop()}
-                      className="px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-accent/40 text-sm font-medium text-white/80 hover:text-white transition-all duration-300 transform hover:-translate-y-0.5"
+                      className="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-accent/40 hover:bg-white/[0.08] text-sm font-medium text-white/85 hover:text-white transition-all duration-300 transform hover:-translate-y-0.5"
                     >
-                      {skill}
+                      <span className="text-base flex items-center justify-center transition-transform group-hover:scale-110">
+                        {skill.icon}
+                      </span>
+                      <span>{skill.name}</span>
                     </button>
                   ))}
                 </div>
