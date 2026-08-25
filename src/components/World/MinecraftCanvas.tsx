@@ -11,10 +11,8 @@ interface MinecraftCanvasProps {
 
 export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
   const mountRef = useRef<HTMLDivElement | null>(null);
-  const { scrollProgress } = useScrollProgress();
+  const { scrollProgressRef } = useScrollProgress();
   const prefersReducedMotion = usePrefersReducedMotion();
-  const scrollRef = useRef(scrollProgress);
-  scrollRef.current = scrollProgress;
 
   useEffect(() => {
     const container = mountRef.current;
@@ -302,10 +300,15 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       }
     }
 
-    // --- 3D Oak Tree ---
-    const createTree = (tx: number, ty: number, tz: number) => {
+    // --- 3D Oak Trees (Grounded on terrain) ---
+    const createTree = (tx: number, tz: number) => {
+      // Calculate exact terrain height at (tx, tz)
+      const terrainHeight = Math.floor(Math.sin(tx * 0.35) * 1.4 + Math.cos(tz * 0.35) * 1.4);
+      // Top of block is terrainHeight + 0.5
+      const groundY = terrainHeight + 0.5;
+
       const treeGroup = new THREE.Group();
-      treeGroup.position.set(tx, ty, tz);
+      treeGroup.position.set(tx, groundY, tz);
 
       for (let y = 0; y < 5; y++) {
         const trunk = new THREE.Mesh(boxGeo, woodMat);
@@ -339,12 +342,15 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       worldGroup.add(treeGroup);
     };
 
-    createTree(-4, 2, -3);
-    createTree(5, 1, 3);
+    // Grounded trees (tx, tz)
+    createTree(-4, -3);
+    createTree(5, 3);
 
-    // --- 3D Nether Portal ---
+    // --- 3D Nether Portal (Grounded on terrain) ---
+    // At x=3, z=-4 terrain height is computed:
+    const portalBaseY = Math.floor(Math.sin(3 * 0.35) * 1.4 + Math.cos(-4 * 0.35) * 1.4) + 0.5;
     const portalGroup = new THREE.Group();
-    portalGroup.position.set(3, 2.5, -4);
+    portalGroup.position.set(3, portalBaseY, -4);
     worldGroup.add(portalGroup);
 
     const portalBlocks = [
@@ -373,8 +379,6 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     portalGroup.add(portalLight);
 
     // --- Authentic Minecraft Character (Jayesh with Beard, Hair, Eyes & Laptop) ---
-    // Place feet on top of terrain. At x=-1, z=2 terrain height ≈ 0, top of block = 0.5
-    // Legs bottom = -0.9 * scale(1.25) = -1.125, so group Y = 0.5 + 1.125 = 1.625
     const character = new THREE.Group();
     character.position.set(-0.8, 1.62, 2);
     character.scale.set(1.25, 1.25, 1.25);
@@ -442,69 +446,99 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     rightArmGroup.add(rightArm);
     character.add(rightArmGroup);
 
-    // --- 3D Minecraft Developer Laptop (Thick, Voxel-Style) ---
+    // --- 3D Matte-Black Laptop (Accurate to Reference Image) ---
+    // Realistic sleek modern laptop with matte black chassis, tapered base, realistic keyboard, side ports, and curved lid
     const laptopGroup = new THREE.Group();
     laptopGroup.position.set(0, 0.75, 0.5);
     character.add(laptopGroup);
 
-    const laptopChassisMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
-    const laptopDarkMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+    // Matte Black Materials
+    const laptopBodyMat = new THREE.MeshLambertMaterial({ color: 0x18181b }); // Charcoal/matte black
+    const laptopAccentMat = new THREE.MeshLambertMaterial({ color: 0x09090b }); // Jet black keyboard/ports
+    const laptopTrackpadMat = new THREE.MeshLambertMaterial({ color: 0x27272a }); // Subtle trackpad contrast
+    const portMetalMat = new THREE.MeshLambertMaterial({ color: 0x52525b });
 
-    // Thick Laptop Base Slab (visible depth)
-    const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.55), laptopChassisMat);
-    laptopBase.castShadow = true;
-    laptopGroup.add(laptopBase);
+    // Laptop Base - Main chassis body with sleek wedge profile
+    const baseMain = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.05, 0.6), laptopBodyMat);
+    baseMain.castShadow = true;
+    laptopGroup.add(baseMain);
 
-    // Keyboard well (recessed dark area on top of base)
-    const keyboardWell = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.02, 0.28), laptopDarkMat);
-    keyboardWell.position.set(0, 0.06, -0.05);
-    laptopGroup.add(keyboardWell);
+    // Tapered lower base bevel (gives it that sleek laptop profile)
+    const baseBottom = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.025, 0.56), laptopBodyMat);
+    baseBottom.position.set(0, -0.035, 0);
+    laptopGroup.add(baseBottom);
 
-    // Individual chunky keyboard key rows (voxel style)
-    const keyMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
-    for (let row = 0; row < 4; row++) {
-      for (let col = 0; col < 10; col++) {
-        const key = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.015, 0.05), keyMat);
-        key.position.set(-0.27 + col * 0.06, 0.07, -0.13 + row * 0.065);
-        laptopGroup.add(key);
+    // Keyboard well
+    const kbWell = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.008, 0.32), laptopAccentMat);
+    kbWell.position.set(0, 0.026, -0.08);
+    laptopGroup.add(kbWell);
+
+    // Individual keyboard keys (Chiclet style matching reference image)
+    const keyMeshMat = new THREE.MeshLambertMaterial({ color: 0x111113 });
+    for (let r = 0; r < 5; r++) {
+      const zPos = -0.21 + r * 0.062;
+      for (let c = 0; c < 12; c++) {
+        const xPos = -0.33 + c * 0.06;
+        const keyW = (r === 4 && c >= 4 && c <= 7) ? 0.22 : 0.046;
+        if (r === 4 && (c > 4 && c <= 7)) continue; // spacebar span
+        const keyMesh = new THREE.Mesh(new THREE.BoxGeometry(keyW, 0.012, 0.046), keyMeshMat);
+        keyMesh.position.set(r === 4 && c === 4 ? -0.33 + 5.5 * 0.06 : xPos, 0.033, zPos);
+        laptopGroup.add(keyMesh);
       }
     }
 
-    // Trackpad block
-    const trackpadMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
-    const trackpad = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.015, 0.14), trackpadMat);
-    trackpad.position.set(0, 0.065, 0.16);
-    laptopGroup.add(trackpad);
+    // Touchpad (wide modern aspect ratio)
+    const touchpad = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.006, 0.16), laptopTrackpadMat);
+    touchpad.position.set(0, 0.027, 0.16);
+    laptopGroup.add(touchpad);
 
-    // --- Screen Lid (Hinged at the back edge, angled open at ~110°) ---
+    // Side IO Ports (VGA / HDMI / USB vents visible in reference image)
+    const leftPorts = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.02, 0.25), portMetalMat);
+    leftPorts.position.set(-0.431, 0, -0.05);
+    laptopGroup.add(leftPorts);
+
+    const rightPorts = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.02, 0.18), portMetalMat);
+    rightPorts.position.set(0.431, 0, -0.05);
+    laptopGroup.add(rightPorts);
+
+    // --- Screen Lid (Hinged at back edge, angled back ~112° like reference) ---
     const screenHinge = new THREE.Group();
-    screenHinge.position.set(0, 0.05, -0.275);
-    screenHinge.rotation.x = -Math.PI / 2.5; // ~108° open angle
+    screenHinge.position.set(0, 0.025, -0.3);
+    screenHinge.rotation.x = -Math.PI / 2.35;
     laptopGroup.add(screenHinge);
 
-    // Screen lid back panel (aluminum shell)
-    const screenLidBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.55, 0.04), laptopChassisMat);
-    screenLidBack.position.set(0, 0.275, 0);
-    screenLidBack.castShadow = true;
-    screenHinge.add(screenLidBack);
+    // Outer Back Lid (Matte Black with subtle curvature bevel)
+    const screenOuterLid = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.58, 0.03), laptopBodyMat);
+    screenOuterLid.position.set(0, 0.29, 0);
+    screenOuterLid.castShadow = true;
+    screenHinge.add(screenOuterLid);
 
-    // Black screen bezel (slightly recessed)
-    const bezelMat = new THREE.MeshLambertMaterial({ color: 0x0a0a0a });
-    const screenBezel = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.48, 0.005), bezelMat);
-    screenBezel.position.set(0, 0.275, 0.023);
+    // Sleek rounded back lip
+    const screenLip = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.015, 0.025), laptopBodyMat);
+    screenLip.position.set(0, 0.58, 0);
+    screenHinge.add(screenLip);
+
+    // Inner Bezel (Slim black frame around screen)
+    const screenBezel = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.54, 0.005), laptopAccentMat);
+    screenBezel.position.set(0, 0.29, 0.016);
     screenHinge.add(screenBezel);
 
-    // Glowing Code Screen
+    // Web camera dot at top bezel
+    const webcamDot = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.01, 0.002), portMetalMat);
+    webcamDot.position.set(0, 0.54, 0.02);
+    screenHinge.add(webcamDot);
+
+    // Screen Display (Glowing Code IDE)
     const codeScreenTex = createCodeScreenTexture();
     const screenDisplay = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.68, 0.42),
+      new THREE.PlaneGeometry(0.78, 0.48),
       new THREE.MeshBasicMaterial({ map: codeScreenTex })
     );
-    screenDisplay.position.set(0, 0.275, 0.026);
+    screenDisplay.position.set(0, 0.285, 0.02);
     screenHinge.add(screenDisplay);
 
-    // Screen glow light casting onto Jayesh's face and body
-    const laptopGlow = new THREE.PointLight(0x38bdf8, 2.5, 4);
+    // Screen Glow Light
+    const laptopGlow = new THREE.PointLight(0x38bdf8, 2.8, 4.5);
     laptopGlow.position.set(0, 0.3, 0.15);
     screenHinge.add(laptopGlow);
 
@@ -660,7 +694,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
 
     const animate = () => {
       time += 0.018;
-      const progress = scrollRef.current;
+      const progress = scrollProgressRef.current;
 
       const radius = 19 - progress * 6;
       const angle = progress * Math.PI * 1.5 + mouseX * 0.25;
@@ -668,9 +702,10 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       const targetCamZ = Math.cos(angle) * radius;
       const targetCamY = 6.5 + Math.sin(progress * Math.PI) * 3 - mouseY * 1.8;
 
-      camera.position.x += (targetCamX - camera.position.x) * 0.06;
-      camera.position.y += (targetCamY - camera.position.y) * 0.06;
-      camera.position.z += (targetCamZ - camera.position.z) * 0.06;
+      // Fast, ultra-smooth responsive camera tracking (increased lerp factor to 0.12 for snappy response)
+      camera.position.x += (targetCamX - camera.position.x) * 0.12;
+      camera.position.y += (targetCamY - camera.position.y) * 0.12;
+      camera.position.z += (targetCamZ - camera.position.z) * 0.12;
 
       camera.lookAt(character.position.x + 0.5, character.position.y + 1.0, character.position.z);
 

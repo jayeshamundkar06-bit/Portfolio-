@@ -1,31 +1,42 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 export function useScrollProgress() {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [currentSection, setCurrentSection] = useState("hero");
+  const scrollProgressRef = useRef(0);
+  const currentSectionRef = useRef("hero");
 
+  // Use a ref-only approach so scroll events NEVER trigger React re-renders.
+  // The Three.js render loop reads scrollProgressRef.current directly.
   useEffect(() => {
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const currentScroll = window.scrollY;
-      if (totalScroll > 0) {
-        setScrollProgress(Math.min(Math.max(currentScroll / totalScroll, 0), 1));
-      }
+    let ticking = false;
 
-      // Check current section
-      const sections = ["hero", "about", "skills", "strengths", "experience", "projects", "certifications", "dsa", "contact"];
-      for (const section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= window.innerHeight * 0.45 && rect.bottom >= window.innerHeight * 0.45) {
-            setCurrentSection(section);
-            break;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const currentScroll = window.scrollY;
+        if (totalScroll > 0) {
+          scrollProgressRef.current = Math.min(Math.max(currentScroll / totalScroll, 0), 1);
+        }
+
+        // Section detection
+        const sections = ["home", "about", "skills", "experience", "projects", "education", "certifications", "contact"];
+        for (const section of sections) {
+          const el = document.getElementById(section);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= window.innerHeight * 0.45 && rect.bottom >= window.innerHeight * 0.45) {
+              currentSectionRef.current = section;
+              break;
+            }
           }
         }
-      }
+
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -34,5 +45,5 @@ export function useScrollProgress() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return { scrollProgress, currentSection };
+  return { scrollProgress: scrollProgressRef.current, scrollProgressRef, currentSection: currentSectionRef.current };
 }
