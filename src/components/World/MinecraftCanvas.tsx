@@ -373,8 +373,10 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     portalGroup.add(portalLight);
 
     // --- Authentic Minecraft Character (Jayesh with Beard, Hair, Eyes & Laptop) ---
+    // Place feet on top of terrain. At x=-1, z=2 terrain height ≈ 0, top of block = 0.5
+    // Legs bottom = -0.9 * scale(1.25) = -1.125, so group Y = 0.5 + 1.125 = 1.625
     const character = new THREE.Group();
-    character.position.set(-0.8, 2.6, 2);
+    character.position.set(-0.8, 1.62, 2);
     character.scale.set(1.25, 1.25, 1.25);
     worldGroup.add(character);
 
@@ -440,52 +442,71 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     rightArmGroup.add(rightArm);
     character.add(rightArmGroup);
 
-    // --- 3D Minecraft Developer Laptop ---
+    // --- 3D Minecraft Developer Laptop (Thick, Voxel-Style) ---
     const laptopGroup = new THREE.Group();
-    laptopGroup.position.set(0, 0.75, 0.55);
-    laptopGroup.rotation.x = Math.PI / 12;
+    laptopGroup.position.set(0, 0.75, 0.5);
     character.add(laptopGroup);
 
-    // Laptop Base / Keyboard chassis (Space Gray Aluminum)
     const laptopChassisMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
-    const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.04, 0.45), laptopChassisMat);
+    const laptopDarkMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+
+    // Thick Laptop Base Slab (visible depth)
+    const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.55), laptopChassisMat);
+    laptopBase.castShadow = true;
     laptopGroup.add(laptopBase);
 
-    // Keyboard Area
-    const keyboardMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
-    const keyboard = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.01, 0.25), keyboardMat);
-    keyboard.position.set(0, 0.025, -0.05);
-    laptopGroup.add(keyboard);
+    // Keyboard well (recessed dark area on top of base)
+    const keyboardWell = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.02, 0.28), laptopDarkMat);
+    keyboardWell.position.set(0, 0.06, -0.05);
+    laptopGroup.add(keyboardWell);
 
-    // Trackpad
-    const trackpad = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.005, 0.12), new THREE.MeshLambertMaterial({ color: 0x475569 }));
-    trackpad.position.set(0, 0.025, 0.12);
+    // Individual chunky keyboard key rows (voxel style)
+    const keyMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 10; col++) {
+        const key = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.015, 0.05), keyMat);
+        key.position.set(-0.27 + col * 0.06, 0.07, -0.13 + row * 0.065);
+        laptopGroup.add(key);
+      }
+    }
+
+    // Trackpad block
+    const trackpadMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+    const trackpad = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.015, 0.14), trackpadMat);
+    trackpad.position.set(0, 0.065, 0.16);
     laptopGroup.add(trackpad);
 
-    // Laptop Screen Lid (Angled back at 110 deg)
-    const laptopScreenLid = new THREE.Group();
-    laptopScreenLid.position.set(0, 0.02, -0.22);
-    laptopScreenLid.rotation.x = -Math.PI / 2.8;
-    laptopGroup.add(laptopScreenLid);
+    // --- Screen Lid (Hinged at the back edge, angled open at ~110°) ---
+    const screenHinge = new THREE.Group();
+    screenHinge.position.set(0, 0.05, -0.275);
+    screenHinge.rotation.x = -Math.PI / 2.5; // ~108° open angle
+    laptopGroup.add(screenHinge);
 
-    // Screen Bezel
-    const screenBezel = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.45, 0.03), laptopChassisMat);
-    screenBezel.position.set(0, 0.22, 0);
-    laptopScreenLid.add(screenBezel);
+    // Screen lid back panel (aluminum shell)
+    const screenLidBack = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.55, 0.04), laptopChassisMat);
+    screenLidBack.position.set(0, 0.275, 0);
+    screenLidBack.castShadow = true;
+    screenHinge.add(screenLidBack);
 
-    // Glowing Code Screen Plane
+    // Black screen bezel (slightly recessed)
+    const bezelMat = new THREE.MeshLambertMaterial({ color: 0x0a0a0a });
+    const screenBezel = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.48, 0.005), bezelMat);
+    screenBezel.position.set(0, 0.275, 0.023);
+    screenHinge.add(screenBezel);
+
+    // Glowing Code Screen
     const codeScreenTex = createCodeScreenTexture();
     const screenDisplay = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.58, 0.38),
+      new THREE.PlaneGeometry(0.68, 0.42),
       new THREE.MeshBasicMaterial({ map: codeScreenTex })
     );
-    screenDisplay.position.set(0, 0.22, 0.02);
-    laptopScreenLid.add(screenDisplay);
+    screenDisplay.position.set(0, 0.275, 0.026);
+    screenHinge.add(screenDisplay);
 
-    // Screen light casting glow onto Jayesh
-    const laptopGlow = new THREE.PointLight(0x38bdf8, 1.8, 3);
-    laptopGlow.position.set(0, 0.25, 0.1);
-    laptopScreenLid.add(laptopGlow);
+    // Screen glow light casting onto Jayesh's face and body
+    const laptopGlow = new THREE.PointLight(0x38bdf8, 2.5, 4);
+    laptopGlow.position.set(0, 0.3, 0.15);
+    screenHinge.add(laptopGlow);
 
     // Legs
     const pantsMat = new THREE.MeshLambertMaterial({ color: 0x1a237e });
@@ -500,8 +521,9 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     character.add(rightLeg);
 
     // --- Cute Little Minecraft Lamb / Baby Sheep beside Jayesh ---
+    // At x=1, z=2 terrain height ≈ 1, top of block = 1.5
     const lambGroup = new THREE.Group();
-    lambGroup.position.set(1.4, 2.2, 2.2);
+    lambGroup.position.set(1.4, 1.5, 2.2);
     lambGroup.scale.set(0.85, 0.85, 0.85);
     lambGroup.rotation.y = -Math.PI / 6;
     worldGroup.add(lambGroup);
@@ -652,15 +674,15 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
 
       camera.lookAt(character.position.x + 0.5, character.position.y + 1.0, character.position.z);
 
-      // Jayesh Breathing & Typing
-      character.position.y = 2.6 + Math.sin(time * 2.2) * 0.04;
+      // Jayesh subtle idle animation (stays grounded)
+      character.position.y = 1.62 + Math.sin(time * 2.2) * 0.02;
       head.rotation.y = Math.sin(time * 1.2) * 0.15 + mouseX * 0.35;
       head.rotation.x = -mouseY * 0.2 + 0.1; // looking slightly down at screen
       leftArmGroup.rotation.z = Math.sin(time * 6) * 0.04;
       rightArmGroup.rotation.z = -Math.sin(time * 6) * 0.04;
 
-      // Little Lamb Nibbling & Head Tilting
-      lambGroup.position.y = 2.2 + Math.sin(time * 2.5) * 0.03;
+      // Little Lamb idle animation (stays grounded)
+      lambGroup.position.y = 1.5 + Math.sin(time * 2.5) * 0.015;
       lambHeadGroup.rotation.x = Math.sin(time * 1.8) * 0.15;
       lambHeadGroup.rotation.y = Math.cos(time * 1.2) * 0.25;
       leftEar.rotation.z = Math.PI / 8 + Math.sin(time * 4) * 0.1;
