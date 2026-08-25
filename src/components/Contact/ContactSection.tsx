@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Mail, Phone, MapPin, Github, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Github, ArrowRight } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
 
 export const ContactSection: React.FC = () => {
@@ -30,11 +30,11 @@ export const ContactSection: React.FC = () => {
       gradient: "from-orange-500 to-yellow-400"
     },
     {
-      icon: <Github className="w-5 h-5" />,
-      label: "GitHub",
-      value: "jayeshamundkar06-bit",
-      href: "https://github.com/jayeshamundkar06-bit",
-      gradient: "from-purple-500 to-pink-400"
+      icon: <Linkedin className="w-5 h-5" />,
+      label: "LinkedIn",
+      value: "jayeshamundkar",
+      href: "https://www.linkedin.com/in/jayeshamundkar/",
+      gradient: "from-blue-600 to-cyan-500"
     }
   ];
 
