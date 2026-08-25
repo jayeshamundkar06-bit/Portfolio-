@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { soundEngine } from "@/lib/soundEngine";
 
 export function useSound() {
@@ -15,26 +15,35 @@ export function useSound() {
     }
   }, []);
 
-  const toggleSound = () => {
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    soundEngine.setMuted(nextMuted);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("mc_audio_muted", String(nextMuted));
-    }
-    if (!nextMuted) {
-      soundEngine.playItemPop();
-    }
-  };
+  const toggleSound = useCallback(() => {
+    setIsMuted((prev) => {
+      const nextMuted = !prev;
+      soundEngine.setMuted(nextMuted);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("mc_audio_muted", String(nextMuted));
+      }
+      if (!nextMuted) {
+        soundEngine.playItemPop();
+      }
+      return nextMuted;
+    });
+  }, []);
+
+  const playClick = useCallback((freq?: number) => soundEngine.playClick(freq), []);
+  const playItemPop = useCallback(() => soundEngine.playItemPop(), []);
+  const playPling = useCallback((semi?: number) => soundEngine.playPling(semi), []);
+  const playLevelUp = useCallback(() => soundEngine.playLevelUp(), []);
+  const playChestOpen = useCallback(() => soundEngine.playChestOpen(), []);
+  const playPortalWarp = useCallback(() => soundEngine.playPortalWarp(), []);
 
   return {
     isMuted,
     toggleSound,
-    playClick: (freq?: number) => soundEngine.playClick(freq),
-    playItemPop: () => soundEngine.playItemPop(),
-    playPling: (semi?: number) => soundEngine.playPling(semi),
-    playLevelUp: () => soundEngine.playLevelUp(),
-    playChestOpen: () => soundEngine.playChestOpen(),
-    playPortalWarp: () => soundEngine.playPortalWarp()
+    playClick,
+    playItemPop,
+    playPling,
+    playLevelUp,
+    playChestOpen,
+    playPortalWarp
   };
 }
