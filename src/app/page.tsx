@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import Lenis from "lenis";
 import { MinecraftCanvas } from "@/components/World/MinecraftCanvas";
 import { Navbar } from "@/components/Navigation/Navbar";
 import { HeroSection } from "@/components/Hero/HeroSection";
@@ -14,6 +15,33 @@ import { ContactSection } from "@/components/Contact/ContactSection";
 import { Footer } from "@/components/Footer/Footer";
 
 export default function Home() {
+  // Initialize buttery smooth physics-based momentum scrolling (Lenis)
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential smooth decay
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false
+    });
+
+    // Sync Lenis with requestAnimationFrame loop
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-primary font-sans text-textLight relative selection:bg-accent selection:text-primary">
       {/* Constant 3D Minecraft Three.js World Background */}
