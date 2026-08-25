@@ -1,0 +1,4 @@
+﻿User-agent: *
+Allow: /
+
+Sitemap: https://portfolio-pxh39lukp-jayesh-amundkar.vercel.app/sitemap.xml
