@@ -1,15 +1,10 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --mc-dark: #0f1115;
-  --mc-panel: #1e222b;
-  --mc-border: #3b4252;
-  --font-vt323: 'VT323', monospace;
-  --font-press-start: 'Press Start 2P', monospace;
   --font-inter: 'Inter', sans-serif;
 }
 
@@ -21,162 +16,37 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #0b0d11;
-  color: #e2e8f0;
+  background-color: #0a0f18;
+  color: #f8fafc;
   font-family: var(--font-inter);
 }
 
-/* Custom Minecraft-styled Pixel Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #14171d;
-  border-left: 2px solid #232834;
+  background: #0a0f18;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3b4354;
-  border: 2px solid #14171d;
-  box-shadow: inset 1px 1px 0 #59647d, inset -1px -1px 0 #1b202a;
+  background: #1e293b;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #505c73;
+  background: #334155;
 }
 
-/* Minecraft UI Component Classes */
-.mc-font-pixel {
-  font-family: 'VT323', monospace;
-  letter-spacing: 0.05em;
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.mc-font-arcade {
-  font-family: 'Press Start 2P', monospace;
-  letter-spacing: -0.05em;
-}
-
-.mc-panel {
-  background-color: #1a1e27;
-  border: 3px solid #3d4659;
-  box-shadow: inset 3px 3px 0px #5c6883, inset -3px -3px 0px #0e1117, 0 8px 24px rgba(0, 0, 0, 0.6);
-  position: relative;
-}
-
-.mc-panel-dark {
-  background-color: #12151c;
-  border: 3px solid #282f3d;
-  box-shadow: inset 2px 2px 0px #384257, inset -2px -2px 0px #090b0e;
-}
-
-.mc-button {
-  background-color: #3b4354;
-  color: #ffffff;
-  border: 2px solid #14171d;
-  box-shadow: inset 2px 2px 0px #63718f, inset -2px -2px 0px #1e232d, 0 4px 6px rgba(0,0,0,0.3);
-  font-family: 'VT323', monospace;
-  font-size: 1.25rem;
-  letter-spacing: 0.05em;
-  padding: 0.5rem 1.25rem;
-  text-shadow: 2px 2px #11141a;
-  transition: transform 0.1s ease, background-color 0.15s ease;
-  user-select: none;
-  cursor: pointer;
-}
-
-.mc-button:hover {
-  background-color: #4a546a;
-  color: #ffffa0;
-}
-
-.mc-button:active {
-  box-shadow: inset -2px -2px 0px #63718f, inset 2px 2px 0px #1e232d;
-  transform: translateY(2px);
-}
-
-.mc-button-primary {
-  background-color: #2b7a3e;
-  border-color: #0f3d1b;
-  box-shadow: inset 2px 2px 0px #55cf73, inset -2px -2px 0px #154722, 0 4px 6px rgba(0,0,0,0.4);
-}
-
-.mc-button-primary:hover {
-  background-color: #35964d;
-  color: #ffffff;
-}
-
-.mc-button-gold {
-  background-color: #996e14;
-  border-color: #4a3406;
-  box-shadow: inset 2px 2px 0px #e0b44a, inset -2px -2px 0px #5e4308;
-}
-
-.mc-button-gold:hover {
-  background-color: #b8861d;
-  color: #fffde0;
-}
-
-/* Item Slot */
-.mc-slot {
-  background-color: #12141a;
-  border: 3px solid #373f4e;
-  box-shadow: inset 3px 3px 0px #090a0d, inset -3px -3px 0px #4d576a;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.mc-slot:hover {
-  border-color: #6a7a99;
-  background-color: #1b1f28;
-  transform: translateY(-2px);
-}
-
-/* Parchment / Ancient Book UI */
-.mc-parchment {
-  background-color: #ebd6a9;
-  color: #2e1d0d;
-  border: 4px solid #6b4724;
-  box-shadow: inset 4px 4px 0px #fcf3db, inset -4px -4px 0px #a3723c, 0 10px 30px rgba(0,0,0,0.5);
-}
-
-/* Enchantment Glow Text */
-.mc-enchant-text {
-  color: #c084fc;
-  text-shadow: 0 0 8px rgba(192, 132, 252, 0.6);
-}
-
-/* Pixel Grid Overlay */
-.pixel-grid-bg {
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* Tooltip container styling */
-.mc-tooltip {
-  background: #110e1c;
-  border: 2px solid #4a0e78;
-  box-shadow: inset 2px 2px 0 #8338ec, inset -2px -2px 0 #240046, 0 8px 24px rgba(0,0,0,0.8);
-  font-family: 'VT323', monospace;
-}
-
-/* Floating animation helper */
-@keyframes mc-bob {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-.animate-mc-bob {
-  animation: mc-bob 3s ease-in-out infinite;
-}
-
-@keyframes mc-portal {
-  0% { filter: hue-rotate(0deg) contrast(1.1); }
-  50% { filter: hue-rotate(30deg) contrast(1.3); }
-  100% { filter: hue-rotate(0deg) contrast(1.1); }
-}
-
-.animate-portal {
-  animation: mc-portal 6s ease-in-out infinite;
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.18);
 }

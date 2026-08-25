@@ -1,65 +1,41 @@
-﻿"use client";
+"use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { MinecraftCanvas } from "@/components/World/MinecraftCanvas";
-import { MinecraftCursor } from "@/components/Cursor/MinecraftCursor";
-import { MinecraftNav } from "@/components/Navigation/MinecraftNav";
-import { WorldGenerator } from "@/components/LoadingScreen/WorldGenerator";
+import { Navbar } from "@/components/Navigation/Navbar";
 import { HeroSection } from "@/components/Hero/HeroSection";
 import { AboutSection } from "@/components/About/AboutSection";
 import { SkillsSection } from "@/components/Skills/SkillsSection";
-import { StrengthsHUD } from "@/components/Strengths/StrengthsHUD";
-import { QuestBoard } from "@/components/Experience/QuestBoard";
+import { ExperienceSection } from "@/components/Experience/ExperienceSection";
 import { ProjectsSection } from "@/components/Projects/ProjectsSection";
-import { Advancements } from "@/components/Certifications/Advancements";
-import { DungeonSection } from "@/components/DSA/DungeonSection";
-import { NetherPortal } from "@/components/Contact/NetherPortal";
-import { CommandBlockModal } from "@/components/EasterEggs/CommandBlockModal";
-import { SecretChest } from "@/components/EasterEggs/SecretChest";
-import { useScrollProgress } from "@/hooks/useScrollProgress";
+import { EducationSection } from "@/components/Education/EducationSection";
+import { CertificationsSection } from "@/components/Certifications/CertificationsSection";
+import { ContactSection } from "@/components/Contact/ContactSection";
+import { Footer } from "@/components/Footer/Footer";
 
 export default function Home() {
-  const [worldLoaded, setWorldLoaded] = useState(false);
-  const [commandBlockOpen, setCommandBlockOpen] = useState(false);
-  const { currentSection } = useScrollProgress();
-
   return (
-    <>
-      <MinecraftCursor />
+    <div className="min-h-screen bg-primary font-sans text-textLight relative selection:bg-accent selection:text-primary">
+      {/* Constant 3D Minecraft Three.js World Background */}
+      <MinecraftCanvas />
 
-      {!worldLoaded ? (
-        <WorldGenerator onEnter={() => setWorldLoaded(true)} />
-      ) : (
-        <main className="relative min-h-screen bg-mc-bg text-slate-100 overflow-x-hidden">
-          {/* Continuous Minecraft Cinematic World Canvas Background */}
-          <MinecraftCanvas activeSection={currentSection} />
+      {/* Floating Navbar */}
+      <Navbar />
 
-          {/* Floating Hotbar Navigation */}
-          <MinecraftNav onOpenCommandBlock={() => setCommandBlockOpen(true)} />
+      {/* Main Content Sections with Exact Original Portfolio Text and Typography */}
+      <main className="relative z-10">
+        <HeroSection />
+        <AboutSection />
+        <SkillsSection />
+        <ExperienceSection />
+        <ProjectsSection />
+        <EducationSection />
+        <CertificationsSection />
+        <ContactSection />
+      </main>
 
-          {/* Secret Easter Egg Loot Chest */}
-          <SecretChest />
-
-          {/* Command Terminal Modal */}
-          <CommandBlockModal
-            isOpen={commandBlockOpen}
-            onClose={() => setCommandBlockOpen(false)}
-          />
-
-          {/* Scrollable Cinematic World Sections */}
-          <div className="relative z-10 space-y-12 sm:space-y-20 pb-16">
-            <HeroSection />
-            <AboutSection />
-            <SkillsSection />
-            <StrengthsHUD />
-            <QuestBoard />
-            <ProjectsSection />
-            <Advancements />
-            <DungeonSection />
-            <NetherPortal />
-          </div>
-        </main>
-      )}
-    </>
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 }
