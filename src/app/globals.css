@@ -74,3 +74,42 @@ body {
   background: rgba(10, 15, 24, 0.3);
   border-color: rgba(255, 255, 255, 0.25);
 }
+
+/* --- Mobile Performance Optimizations --- */
+@media (max-width: 768px) {
+  /* Reduce blur on mobile for GPU perf */
+  .glass-panel {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* Smooth touch scrolling */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+
+  /* GPU compositing layer for main content */
+  main {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Disable heavy hover transitions on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Reduce transition durations on mobile */
+  .glass-panel,
+  .glass-panel:hover {
+    transition-duration: 200ms !important;
+  }
+}
+
+/* Smooth GPU-accelerated animations everywhere */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: auto; /* Lenis handles this */
+  }
+}

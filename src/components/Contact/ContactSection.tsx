@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Mail, Phone, MapPin, Linkedin, Github, ArrowRight } from "lucide-react";
+import { Phone, MapPin, Linkedin, Github, ArrowRight } from "lucide-react";
+import { SiLeetcode } from "react-icons/si";
 import { useSound } from "@/hooks/useSound";
 
 export const ContactSection: React.FC = () => {
@@ -9,11 +10,11 @@ export const ContactSection: React.FC = () => {
 
   const contactItems = [
     {
-      icon: <Mail className="w-5 h-5" />,
-      label: "Email",
-      value: "jayesh.amundkar06@gmail.com",
-      href: "mailto:jayesh.amundkar06@gmail.com",
-      gradient: "from-blue-500 to-cyan-400"
+      icon: <SiLeetcode className="w-6 h-6 text-white" />,
+      label: "LeetCode",
+      value: "JayeshAmundkar",
+      href: "https://leetcode.com/u/JayeshAmundkar/",
+      gradient: "from-amber-500 to-orange-400"
     },
     {
       icon: <Phone className="w-5 h-5" />,

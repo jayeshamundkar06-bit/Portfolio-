@@ -18,27 +18,32 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     const container = mountRef.current;
     if (!container) return;
 
+    // --- Mobile Detection for Performance Scaling ---
+    const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
     // --- Scene, Camera, Renderer ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0e1422, 0.012);
+    scene.fog = new THREE.FogExp2(0x0e1422, isMobile ? 0.018 : 0.012);
 
     const camera = new THREE.PerspectiveCamera(
-      42,
+      isMobile ? 50 : 42,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      isMobile ? 500 : 1000
     );
     camera.position.set(0, 7, 20);
 
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !isMobile,
       alpha: true,
       powerPreference: "high-performance"
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.shadowMap.enabled = !isMobile;
+    if (!isMobile) {
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
@@ -261,7 +266,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    const islandRadius = 8;
+    const islandRadius = isMobile ? 5 : 8;
     for (let x = -islandRadius; x <= islandRadius; x++) {
       for (let z = -islandRadius; z <= islandRadius; z++) {
         const dist = Math.sqrt(x * x + z * z);
@@ -271,29 +276,35 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
           // Top Grass
           const grassMesh = new THREE.Mesh(boxGeo, grassMat);
           grassMesh.position.set(x, height, z);
-          grassMesh.receiveShadow = true;
-          grassMesh.castShadow = true;
+          grassMesh.receiveShadow = !isMobile;
+          grassMesh.castShadow = !isMobile;
           worldGroup.add(grassMesh);
 
-          // Dirt
-          for (let y = height - 1; y >= height - 2; y--) {
+          // Dirt (only 1 layer on mobile)
+          const dirtDepth = isMobile ? 1 : 2;
+          for (let y = height - 1; y >= height - dirtDepth; y--) {
             const dirtMesh = new THREE.Mesh(boxGeo, dirtMat);
             dirtMesh.position.set(x, y, z);
-            dirtMesh.receiveShadow = true;
             worldGroup.add(dirtMesh);
           }
 
-          // Stone & Ores
-          const bottomDepth = height - 3 - Math.floor(islandRadius - dist);
-          for (let y = height - 3; y >= bottomDepth; y--) {
-            let mat = stoneMat;
-            const rand = Math.random();
-            if (rand > 0.92) mat = diamondMat;
-            else if (rand > 0.85) mat = goldMat;
+          // Stone & Ores (shallower on mobile)
+          if (!isMobile) {
+            const bottomDepth = height - 3 - Math.floor(islandRadius - dist);
+            for (let y = height - 3; y >= bottomDepth; y--) {
+              let mat = stoneMat;
+              const rand = Math.random();
+              if (rand > 0.92) mat = diamondMat;
+              else if (rand > 0.85) mat = goldMat;
 
-            const stoneMesh = new THREE.Mesh(boxGeo, mat);
-            stoneMesh.position.set(x, y, z);
-            stoneMesh.receiveShadow = true;
+              const stoneMesh = new THREE.Mesh(boxGeo, mat);
+              stoneMesh.position.set(x, y, z);
+              worldGroup.add(stoneMesh);
+            }
+          } else {
+            // Mobile: just 1 stone layer
+            const stoneMesh = new THREE.Mesh(boxGeo, stoneMat);
+            stoneMesh.position.set(x, height - dirtDepth - 1, z);
             worldGroup.add(stoneMesh);
           }
         }
@@ -623,7 +634,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     lambGroup.add(lambLegBR);
 
     // --- Floating Glowing Runes & Particles ---
-    const particleCount = 200;
+    const particleCount = isMobile ? 30 : 100;
     const particleGeo = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
@@ -643,7 +654,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     particleGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
     const particleMat = new THREE.PointsMaterial({
-      size: 0.3,
+      size: isMobile ? 0.4 : 0.3,
       vertexColors: true,
       transparent: true,
       opacity: 0.85
@@ -652,23 +663,25 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     scene.add(particles);
 
     // --- Crisp Direct & Ambient Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    const ambientLight = new THREE.AmbientLight(0xffffff, isMobile ? 1.0 : 0.85);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.6);
+    const sunLight = new THREE.DirectionalLight(0xfff5e6, isMobile ? 1.2 : 1.6);
     sunLight.position.set(12, 24, 16);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
-    sunLight.shadow.bias = -0.0005;
+    if (!isMobile) {
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 1024;
+      sunLight.shadow.mapSize.height = 1024;
+      sunLight.shadow.bias = -0.0005;
+    }
     scene.add(sunLight);
 
     // Character & Lamb keylight
-    const charLight = new THREE.PointLight(0x4deeea, 1.8, 9);
+    const charLight = new THREE.PointLight(0x4deeea, isMobile ? 1.2 : 1.8, isMobile ? 6 : 9);
     charLight.position.set(0, 3.5, 3.5);
     scene.add(charLight);
 
-    // --- Mouse Parallax Controls ---
+    // --- Mouse / Touch Parallax Controls ---
     let mouseX = 0;
     let mouseY = 0;
 
@@ -677,67 +690,93 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-
-    const handleResize = () => {
-      if (!renderer || !camera) return;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    // Touch-based parallax for mobile (using device orientation or gentle touch tracking)
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouseX = (e.touches[0].clientX / window.innerWidth - 0.5) * 1.2;
+        mouseY = (e.touches[0].clientY / window.innerHeight - 0.5) * 1.2;
+      }
     };
 
-    window.addEventListener("resize", handleResize);
+    if (!isMobile) {
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    } else {
+      window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    }
+
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!renderer || !camera) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }, 100);
+    };
+
+    window.addEventListener("resize", handleResize, { passive: true });
 
     // --- Render Loop ---
     let time = 0;
     let animationFrameId: number;
+    let frameCount = 0;
 
     const animate = () => {
+      frameCount++;
       time += 0.018;
       const progress = scrollProgressRef.current;
 
-      const radius = 19 - progress * 6;
-      const angle = progress * Math.PI * 1.5 + mouseX * 0.25;
+      const radius = (isMobile ? 16 : 19) - progress * 6;
+      const angle = progress * Math.PI * 1.5 + mouseX * (isMobile ? 0.1 : 0.25);
       const targetCamX = Math.sin(angle) * radius;
       const targetCamZ = Math.cos(angle) * radius;
-      const targetCamY = 6.5 + Math.sin(progress * Math.PI) * 3 - mouseY * 1.8;
+      const targetCamY = 6.5 + Math.sin(progress * Math.PI) * 3 - mouseY * (isMobile ? 0.8 : 1.8);
 
-      // Fast, ultra-smooth responsive camera tracking (increased lerp factor to 0.12 for snappy response)
-      camera.position.x += (targetCamX - camera.position.x) * 0.12;
-      camera.position.y += (targetCamY - camera.position.y) * 0.12;
-      camera.position.z += (targetCamZ - camera.position.z) * 0.12;
+      // Faster lerp on mobile for snappier response
+      const lerpSpeed = isMobile ? 0.15 : 0.12;
+      camera.position.x += (targetCamX - camera.position.x) * lerpSpeed;
+      camera.position.y += (targetCamY - camera.position.y) * lerpSpeed;
+      camera.position.z += (targetCamZ - camera.position.z) * lerpSpeed;
 
       camera.lookAt(character.position.x + 0.5, character.position.y + 1.0, character.position.z);
 
       // Jayesh subtle idle animation (stays grounded)
       character.position.y = 1.62 + Math.sin(time * 2.2) * 0.02;
       head.rotation.y = Math.sin(time * 1.2) * 0.15 + mouseX * 0.35;
-      head.rotation.x = -mouseY * 0.2 + 0.1; // looking slightly down at screen
+      head.rotation.x = -mouseY * 0.2 + 0.1;
       leftArmGroup.rotation.z = Math.sin(time * 6) * 0.04;
       rightArmGroup.rotation.z = -Math.sin(time * 6) * 0.04;
 
-      // Little Lamb idle animation (stays grounded)
-      lambGroup.position.y = 1.5 + Math.sin(time * 2.5) * 0.015;
-      lambHeadGroup.rotation.x = Math.sin(time * 1.8) * 0.15;
-      lambHeadGroup.rotation.y = Math.cos(time * 1.2) * 0.25;
-      leftEar.rotation.z = Math.PI / 8 + Math.sin(time * 4) * 0.1;
-      rightEar.rotation.z = -Math.PI / 8 - Math.sin(time * 4) * 0.1;
-
-      // Portal energy pulse
-      portalEnergy.scale.set(1 + Math.sin(time * 4) * 0.04, 1 + Math.cos(time * 4) * 0.04, 1);
-      portalLight.intensity = 3 + Math.sin(time * 5) * 1.2;
-
-      // Floating Runes
-      const posArray = particleGeo.attributes.position.array as Float32Array;
-      for (let i = 0; i < particleCount; i++) {
-        posArray[i * 3 + 1] += 0.025;
-        if (posArray[i * 3 + 1] > 28) {
-          posArray[i * 3 + 1] = -5;
-        }
+      // Little Lamb idle animation (skip on mobile every other frame for perf)
+      if (!isMobile || frameCount % 2 === 0) {
+        lambGroup.position.y = 1.5 + Math.sin(time * 2.5) * 0.015;
+        lambHeadGroup.rotation.x = Math.sin(time * 1.8) * 0.15;
+        lambHeadGroup.rotation.y = Math.cos(time * 1.2) * 0.25;
+        leftEar.rotation.z = Math.PI / 8 + Math.sin(time * 4) * 0.1;
+        rightEar.rotation.z = -Math.PI / 8 - Math.sin(time * 4) * 0.1;
       }
-      particleGeo.attributes.position.needsUpdate = true;
 
-      // Dynamic Fog & Sky per Biome
+      // Portal energy pulse (skip on mobile every other frame)
+      if (!isMobile || frameCount % 2 === 0) {
+        portalEnergy.scale.set(1 + Math.sin(time * 4) * 0.04, 1 + Math.cos(time * 4) * 0.04, 1);
+        portalLight.intensity = 3 + Math.sin(time * 5) * 1.2;
+      }
+
+      // Floating Runes (update every 3rd frame on mobile)
+      if (!isMobile || frameCount % 3 === 0) {
+        const posArray = particleGeo.attributes.position.array as Float32Array;
+        const step = isMobile ? 0.075 : 0.025;
+        for (let i = 0; i < particleCount; i++) {
+          posArray[i * 3 + 1] += step;
+          if (posArray[i * 3 + 1] > 28) {
+            posArray[i * 3 + 1] = -5;
+          }
+        }
+        particleGeo.attributes.position.needsUpdate = true;
+      }
+
+      // Dynamic Fog & Sky per Biome (only change when needed)
       if (progress > 0.8) {
         if (scene.fog) scene.fog.color.setHex(0x1a0729);
         renderer.setClearColor(0x130221, 1);
@@ -763,7 +802,9 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
       cancelAnimationFrame(animationFrameId);
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
@@ -776,6 +817,7 @@ export const MinecraftCanvas: React.FC<MinecraftCanvasProps> = () => {
     <div
       ref={mountRef}
       className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+      style={{ willChange: "transform" }}
     />
   );
 };

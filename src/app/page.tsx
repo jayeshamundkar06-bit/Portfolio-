@@ -17,14 +17,16 @@ import { Footer } from "@/components/Footer/Footer";
 export default function Home() {
   // Initialize buttery smooth physics-based momentum scrolling (Lenis)
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential smooth decay
+      duration: isMobile ? 0.8 : 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
+      lerp: isMobile ? 0.15 : 0.1,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      touchMultiplier: isMobile ? 1.2 : 1.5,
       infinite: false
     });
 
