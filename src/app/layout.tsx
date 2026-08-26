@@ -1,10 +1,10 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Jayesh Amundkar | Software Developer Portfolio",
   description:
-    "Portfolio of Jayesh Amundkar — Information Technology student (CGPA 8.36), software developer, web developer and problem-solving enthusiast.",
+    "Portfolio of Jayesh Amundkar — Information Technology graduate (CGPA 8.36), software developer, web developer and problem-solving enthusiast.",
   keywords: [
     "Jayesh Amundkar",
     "Software Developer",

@@ -5,7 +5,7 @@ import { GraduationCap, Code2, Globe, Cpu, Award, Sparkles, Terminal } from "luc
 
 export const AboutSection: React.FC = () => {
   const badges = [
-    { icon: <GraduationCap className="w-4 h-4" />, text: "B.Sc. IT Student", color: "from-blue-500 to-cyan-400" },
+    { icon: <GraduationCap className="w-4 h-4" />, text: "B.Sc. IT Graduate", color: "from-blue-500 to-cyan-400" },
     { icon: <Code2 className="w-4 h-4" />, text: "Software Development", color: "from-purple-500 to-pink-400" },
     { icon: <Globe className="w-4 h-4" />, text: "Full Stack Development", color: "from-green-500 to-emerald-400" },
     { icon: <Terminal className="w-4 h-4" />, text: "Java", color: "from-orange-500 to-red-400" },
@@ -42,7 +42,7 @@ export const AboutSection: React.FC = () => {
               <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-6 font-sans">
                 I am a passionate and dedicated{" "}
                 <span className="text-white font-semibold underline decoration-accent/50">
-                  Third-year Information Technology student
+                  Graduate in Information Technology
                 </span>{" "}
                 with a strong interest in software development, web technologies, and problem-solving.
               </p>

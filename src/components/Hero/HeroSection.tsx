@@ -34,7 +34,7 @@ export const HeroSection: React.FC = () => {
 
           {/* Paragraph */}
           <p className="text-sm sm:text-base md:text-lg text-slate-200 mb-8 max-w-2xl leading-relaxed bg-[#0a0f18]/30 p-4 rounded-2xl backdrop-blur-sm border border-white/[0.1] shadow-2xl">
-            I&apos;m a passionate Information Technology student and developer who enjoys building modern web applications, solving problems, and turning ideas into real-world digital experiences.
+            I&apos;m a passionate Information Technology graduate and developer who enjoys building modern web applications, solving problems, and turning ideas into real-world digital experiences.
           </p>
 
           {/* Action Buttons */}

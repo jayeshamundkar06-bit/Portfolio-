@@ -1,4 +1,4 @@
-﻿export interface EducationItem {
+export interface EducationItem {
   institution: string;
   degree: string;
   score: string;
@@ -56,9 +56,9 @@ export const PROFILE_DATA: ProfileData = {
     "Full-Stack Developer",
     "DSA Enthusiast"
   ],
-  bioHero: "Third-year Information Technology student passionate about software development, web technologies, and problem solving.",
+  bioHero: "Information Technology Graduate passionate about software development, web technologies, and problem solving.",
   aboutParagraphs: [
-    "I am a passionate and dedicated third-year Information Technology student with a strong interest in software development, web technologies, and problem-solving.",
+    "I am a passionate and dedicated Information Technology Graduate with a strong interest in software development, web technologies, and problem-solving.",
     "I have built a solid foundation through academic projects, online courses, and self-learning.",
     "I am eager to apply my technical skills in a real-world environment and contribute meaningfully to a team.",
     "I am curious, detail-oriented, and always excited to explore new tools, languages, and technologies."
@@ -74,7 +74,7 @@ export const PROFILE_DATA: ProfileData = {
       institution: "Ramniranjan Jhunjhunwala College",
       degree: "Bachelor of Science in Information Technology (B.Sc.IT)",
       score: "CGPA — 8.36",
-      year: "Currently in 3rd Year",
+      year: "Graduated",
       location: "Mumbai",
       iconName: "Scroll",
       description: "Focusing on Software Engineering, Data Structures, Web Development, and Database Systems."
